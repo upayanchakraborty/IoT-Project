@@ -1,0 +1,84 @@
+// C++ code
+//
+#include<ESP8266WiFi.h>
+#include<WiFiClient.h>
+#include<ThingSpeak.h>
+const char* ssid="Your Wifi Name";
+const char* pass="Your Wifi Password";
+WiFiClient client;
+unsigned long mych1=2427277;
+// unsigned long mych2=2427277;
+
+const char* apikey="JKYU7HEIM2IT5KBR"; // Enter the API key copied from the database you are storing your data at ( I used Thingspeak )
+const int led1 = D2;
+const int ldr1 = D3;
+const int button = D8;
+const int led2 = D0;
+// const int led2 = D1;
+// const int ldr2 = D7;
+const int buzz = D10;
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(button, INPUT_PULLUP);
+  pinMode(led2, OUTPUT); 
+  pinMode(led1, OUTPUT);
+  pinMode(buzz, OUTPUT);
+  pinMode(ldr1, INPUT);
+  // pinMode(led2, OUTPUT);
+  // //pinMode(buzz, OUTPUT);
+  // pinMode(ldr2, INPUT);
+  
+  WiFi.begin(ssid,pass);
+  ThingSpeak.begin(client);
+}
+
+void loop()
+{
+  int ldrstatus1 = analogRead(ldr1);
+  if (ldrstatus1 <= 20)
+  {
+    digitalWrite(led1, 1);
+    digitalWrite(buzz,1);
+  	delay(1000);
+    Serial.print("Current Light Intensity Value is :");
+    Serial.println(ldrstatus1);
+    
+  }
+  else
+  {
+    digitalWrite(led1, 0);
+    digitalWrite(buzz,0);
+  	delay(1000);
+    Serial.print("Current Light Intensity Value is :");
+    Serial.println(ldrstatus1);
+  }
+  int state = digitalRead(button);    
+  if (state == 0){
+    digitalWrite(led2, HIGH);
+  }
+  else{
+    digitalWrite(led2, LOW);
+  }
+  // int ldrstatus2 = analogRead(ldr2);
+  // if (ldrstatus2 <= 20)
+  // {
+  //   digitalWrite(led2, 1);
+  //   //digitalWrite(buzz,1);
+  // 	delay(1000);
+  //   Serial.print("Current Light Intensity Value is :");
+  //   Serial.println(ldrstatus2);
+    
+  // }
+  // else
+  // {
+  //   digitalWrite(led2, 0);
+  //   //digitalWrite(buzz,0);
+  // 	delay(1000);
+  //   Serial.print("Current Light Intensity Value is :");
+  //   Serial.println(ldrstatus2);
+  // }
+  ThingSpeak.writeField(mych1,1,ldrstatus1,apikey);
+  // ThingSpeak.writeField(mych2,2,ldrstatus2,apikey);
+
+}
